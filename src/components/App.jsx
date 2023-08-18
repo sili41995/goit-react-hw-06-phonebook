@@ -5,12 +5,10 @@ import ContactForm from 'components/ContactForm';
 import Filter from 'components/Filter';
 import ContactList from 'components/ContactList';
 import Section from 'components/Section';
-import LS_KEY from 'constants/local-storage-key';
 import filteredContacts from 'utils/filteredContacts';
-import useLocalStorage from 'hooks/useLocalStorage';
 
 export const App = () => {
-  const [contacts, setContacts] = useLocalStorage(LS_KEY, []);
+  const [contacts, setContacts] = useState([]);
   const [filter, setFilter] = useState('');
 
   const visibleContacts = filteredContacts(filter, contacts);
