@@ -13,7 +13,9 @@ const ContactForm = ({ handleFormSubmit }) => {
     reset,
   } = useForm();
 
-  const onSubmit = (data) => handleFormSubmit(data, reset);
+  const onSubmit = (data) => {
+    handleFormSubmit(data, reset);
+  };
 
   const validateNameField = validateName();
   const validateNumberField = validateNumber();

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { nanoid } from 'nanoid';
 import ContactForm from 'components/ContactForm';
@@ -6,19 +6,21 @@ import Filter from 'components/Filter';
 import ContactList from 'components/ContactList';
 import Section from 'components/Section';
 import filteredContacts from 'utils/filteredContacts';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectContacts } from 'redux/contacts/selectors';
+import { addContact } from 'redux/contacts/contactsSlice';
+import { changeFilter } from 'redux/filter/filterSlice';
+import { selectFilter } from 'redux/filter/selectors';
 
 export const App = () => {
-  const [contacts, setContacts] = useState([]);
-  const [filter, setFilter] = useState('');
+  const dispatch = useDispatch();
+  const contacts = useSelector(selectContacts);
+  const filter = useSelector(selectFilter);
 
   const visibleContacts = filteredContacts(filter, contacts);
 
   const handleFilterChange = ({ target }) => {
-    setFilter(target.value);
-  };
-
-  const handleDelBtnClick = (contactId) => {
-    setContacts((prevState) => prevState.filter(({ id }) => id !== contactId));
+    dispatch(changeFilter(target.value));
   };
 
   const handleFormSubmit = (values, resetForm) => {
@@ -28,7 +30,7 @@ export const App = () => {
       return;
     }
     const contact = { id: nanoid(), ...values };
-    setContacts((prevState) => [...prevState, contact]);
+    dispatch(addContact(contact));
     resetForm();
   };
 
@@ -37,11 +39,8 @@ export const App = () => {
       <h1>Phonebook</h1>
       <ContactForm handleFormSubmit={handleFormSubmit} />
       <h2>Contacts</h2>
-      <Filter filter={filter} handleFilterChange={handleFilterChange} />
-      <ContactList
-        contacts={visibleContacts}
-        handleDelBtnClick={handleDelBtnClick}
-      />
+      <Filter handleFilterChange={handleFilterChange} />
+      <ContactList contacts={visibleContacts} />
     </Section>
   );
 };
