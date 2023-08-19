@@ -1,11 +1,15 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import PropTypes from 'prop-types';
-import { nanoid } from 'nanoid';
 import { validateName, validateNumber } from 'utils/validateFields';
 import { Container, Input, Label, Error } from './ContactForm.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectContacts } from 'redux/contacts/selectors';
+import { addContact } from 'redux/contacts/contactsSlice';
+import { nanoid } from '@reduxjs/toolkit';
 
-const ContactForm = ({ handleFormSubmit }) => {
+const ContactForm = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector(selectContacts);
   const {
     register,
     handleSubmit,
@@ -14,7 +18,17 @@ const ContactForm = ({ handleFormSubmit }) => {
   } = useForm();
 
   const onSubmit = (data) => {
-    handleFormSubmit(data, reset);
+    const { name } = data;
+    const isContact = contacts.some(
+      ({ name: contactName }) => contactName === name
+    );
+    if (isContact) {
+      alert(`${name} is already in contacts.`);
+      return;
+    }
+    const contact = { id: nanoid(), ...data };
+    dispatch(addContact(contact));
+    reset();
   };
 
   const validateNameField = validateName();
@@ -54,7 +68,5 @@ const ContactForm = ({ handleFormSubmit }) => {
     </Container>
   );
 };
-
-ContactForm.propTypes = { handleFormSubmit: PropTypes.func.isRequired };
 
 export default ContactForm;
